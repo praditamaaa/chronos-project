@@ -1,76 +1,41 @@
-from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
-    QPushButton, QTableWidget, QSpinBox, QGroupBox, QFormLayout
-)
-from PySide6.QtCore import Qt
-from graph_canvas import GraphCanvas
+import customtkinter as ctk
+from .graph_canvas import GraphCanvas
 
-class MainWindow(QMainWindow):
+class MainWindow(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Chronos Graph Optimizer — Level 1 (MVC + Visual)")
-        self.setGeometry(120, 80, 1080, 720)
+        self.title("Chronos Graph Optimizer – CustomTkinter Edition")
+        self.geometry("1000x700")
 
-        root = QVBoxLayout()
+        # ------------------ Input ------------------
+        input_frame = ctk.CTkFrame(self)
+        input_frame.pack(fill="x", padx=10, pady=10)
 
-        # --- Panel Input Aktivitas ---
-        form_box = QGroupBox("Tambah Aktivitas")
-        form = QFormLayout()
-        self.name_input = QLineEdit()
-        self.duration_input = QLineEdit()
-        self.location_input = QLineEdit()
-        self.add_button = QPushButton("Tambah Aktivitas")
-        form.addRow("Nama", self.name_input)
-        form.addRow("Durasi (menit)", self.duration_input)
-        form.addRow("Lokasi", self.location_input)
-        form.addRow(self.add_button)
-        form_box.setLayout(form)
-        root.addWidget(form_box)
+        self.name_entry = ctk.CTkEntry(input_frame, placeholder_text="Nama kegiatan")
+        self.duration_entry = ctk.CTkEntry(input_frame, placeholder_text="Durasi (menit)")
+        self.location_entry = ctk.CTkEntry(input_frame, placeholder_text="Lokasi")
+        self.add_button = ctk.CTkButton(input_frame, text="Tambah")
 
-        # --- Tabel Aktivitas ---
-        self.table = QTableWidget(0, 4)
-        self.table.setHorizontalHeaderLabels(["ID", "Nama", "Durasi", "Lokasi"])
-        self.table.horizontalHeader().setStretchLastSection(True)
-        root.addWidget(self.table)
+        self.name_entry.pack(side="left", padx=5, pady=5, expand=True, fill="x")
+        self.duration_entry.pack(side="left", padx=5, pady=5, expand=True, fill="x")
+        self.location_entry.pack(side="left", padx=5, pady=5, expand=True, fill="x")
+        self.add_button.pack(side="left", padx=5, pady=5)
 
-        # --- Panel Edge/Analisis ---
-        actions_row = QHBoxLayout()
+        # ------------------ Tombol Analisis ------------------
+        button_frame = ctk.CTkFrame(self)
+        button_frame.pack(fill="x", padx=10, pady=(0, 10))
 
-        # koneksi otomatis: tombol ini opsional (kita pakai koneksi otomatis saat tambah)
-        self.calc_button = QPushButton("Hitung Jalur Terpendek (1 → terakhir)")
-        self.color_button = QPushButton("Warna Graf (Conflict Coloring)")
-        self.clear_button = QPushButton("Bersihkan Graf")
+        self.shortest_button = ctk.CTkButton(button_frame, text="Hitung Jalur Terpendek")
+        self.color_button = ctk.CTkButton(button_frame, text="Warna Graf")
+        self.clear_button = ctk.CTkButton(button_frame, text="Bersihkan")
 
-        actions_row.addWidget(self.calc_button)
-        actions_row.addWidget(self.color_button)
-        actions_row.addWidget(self.clear_button)
+        self.shortest_button.pack(side="left", padx=5, pady=5)
+        self.color_button.pack(side="left", padx=5, pady=5)
+        self.clear_button.pack(side="left", padx=5, pady=5)
 
-        root.addLayout(actions_row)
+        # ------------------ Output & Canvas ------------------
+        self.output_label = ctk.CTkLabel(self, text="Output akan tampil di sini.", anchor="w")
+        self.output_label.pack(fill="x", padx=10, pady=(0, 5))
 
-        # --- Panel Konflik sederhana (manual) ---
-        conflict_box = QGroupBox("Tambah Konflik (untuk Coloring)")
-        conflict_layout = QHBoxLayout()
-        self.conflict_a = QSpinBox()
-        self.conflict_a.setMinimum(1)
-        self.conflict_b = QSpinBox()
-        self.conflict_b.setMinimum(1)
-        self.add_conflict_btn = QPushButton("Tambah Konflik A—B")
-        conflict_layout.addWidget(QLabel("A:"))
-        conflict_layout.addWidget(self.conflict_a)
-        conflict_layout.addWidget(QLabel("B:"))
-        conflict_layout.addWidget(self.conflict_b)
-        conflict_layout.addWidget(self.add_conflict_btn)
-        conflict_box.setLayout(conflict_layout)
-        root.addWidget(conflict_box)
-
-        # --- Output & Canvas ---
-        self.output_label = QLabel("Output akan tampil di sini.")
-        self.output_label.setAlignment(Qt.AlignLeft)
-        root.addWidget(self.output_label)
-
-        self.graph_canvas = GraphCanvas()
-        root.addWidget(self.graph_canvas)
-
-        container = QWidget()
-        container.setLayout(root)
-        self.setCentralWidget(container)
+        self.graph_canvas = GraphCanvas(self)
+        self.graph_canvas.pack(fill="both", expand=True, padx=10, pady=(0, 10))
