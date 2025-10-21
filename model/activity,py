@@ -1,0 +1,9 @@
+class Activity:
+    def __init__(self, id: int, name: str, duration: int, location: str):
+        self.id = id
+        self.name = name
+        self.duration = duration
+        self.location = location
+
+    def __repr__(self):
+        return f"{self.name} ({self.duration} min @ {self.location})"
